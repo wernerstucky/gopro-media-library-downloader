@@ -20,7 +20,7 @@ const url_base = 'https://api.gopro.com';
 
 for(let file of list) {
   console.log(file);
-  let fileSizeHuman = file.filesize / 1024 / 1024;
+  let fileSizeHuman = file.file_size / 1024 / 1024;
 
   //do the download request to get file URLs
   let fetch_opts = {
