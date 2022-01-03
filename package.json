@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "enquirer": "^2.3.6",
     "got": "^12.0.0"
   }
 }
