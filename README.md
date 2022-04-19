@@ -6,19 +6,28 @@
  *  Use to download GoPro media files faster for achival purposes
 
 
-### Installation
+
+
+## Using via npx
+
+1. Run : npx gopro-media-library-downloader
+
+## Using with Node.js Manually
+
+#### Installation
 
  1. git clone https://github.com/wernerstucky/gopro-media-library-downloader.git
  2. cd gopro-media-library-downloader
  3. npm install
 
 
-### Usage
+#### Usage
  1. node app.mjs
  2. [follow the prompts]
 
 
-### Getting a Bearer token
+
+## Getting a Bearer token
 
  1. Login to https://plus.gopro.com/media-library/
  2. Open the developer tools and enable network recording
@@ -28,7 +37,7 @@
  6. Copy the authorization header from after the Bearer word
 
 
-### Licence
+## Licence
 
 Copyright 2022 Werner Stucky
 
