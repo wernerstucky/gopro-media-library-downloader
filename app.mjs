@@ -1,8 +1,3 @@
-//import list from './media_list.json';
-
-import fs from 'fs';
-//let list = JSON.parse(fs.readFileSync('./media_list.json', 'utf-8')) //OLD WAY
-
 import {promisify} from 'node:util';
 const pipeline = promisify(stream.pipeline);
 import stream from 'node:stream';
