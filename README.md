@@ -1,8 +1,22 @@
 # GoPro Media Downloader
 
  *  Downloads GoPro Media files from the API by giving the app a Bearer Token
+ *  You need to be relatively skilled to use this node app
  *  Get the bearer token by logging into the web browser version https://plus.gopro.com/media-library/
  *  Use to download GoPro media files faster for achival purposes
+
+
+### Installation
+
+ 1. git clone https://github.com/wernerstucky/gopro-media-library-downloader.git
+ 2. cd gopro-media-library-downloader
+ 3. npm install
+
+
+### Usage
+ 1. node app.mjs
+ 2. [follow the prompts]
+
 
 ### Getting a Bearer token
 
@@ -13,6 +27,8 @@
  5. Under the headers section, find Request Headers
  6. Copy the authorization header from after the Bearer word
 
+
+### Licence
 
 Copyright 2022 Werner Stucky
 
