@@ -30,6 +30,12 @@ const response = await enquire.prompt([
     name: 'from_date',
     message: 'Date from which to download (YYYY-MM-DD)',
     initial: config.default_from_date
+  },
+  {
+    type: 'input',
+    name: 'to_folder',
+    message: 'Folder to save to (absolute)',
+    initial: config.default_to_folder
   }
 ]);
 
@@ -90,7 +96,7 @@ if(files_list){
     //console.log(dl_url_parsed);
 
     //add folder
-    filename = 'downloads/' + filename;
+    filename = response.to_folder + '/' + filename;
 
     if(config.enable_download){
       console.log('-----------');
