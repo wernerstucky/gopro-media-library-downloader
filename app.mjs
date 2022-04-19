@@ -1,3 +1,6 @@
+#! /usr/bin/env node
+
+
 import {promisify} from 'node:util';
 const pipeline = promisify(stream.pipeline);
 import stream from 'node:stream';
