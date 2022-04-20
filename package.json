@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "enquirer": "^2.3.6",
+    "fs-extra": "^10.1.0",
     "got": "^12.0.0"
   },
   "name": "gopro-media-library-downloader",
   "description": "*  Downloads GoPro Media files from the API by giving the app a Bearer Token  *  You need to be relatively skilled to use this node app  *  Get the bearer token by logging into the web browser version https://plus.gopro.com/media-library/  *  Use to download GoPro media files faster for achival purposes",
   "version": "1.0.1",
   "main": "app.mjs",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,8 +20,8 @@
   "bugs": {
     "url": "https://github.com/wernerstucky/gopro-media-library-downloader/issues"
   },
-  "bin":{
-    "gopro-media-library-downloader":"app.mjs"
+  "bin": {
+    "gopro-media-library-downloader": "app.mjs"
   },
   "homepage": "https://github.com/wernerstucky/gopro-media-library-downloader#readme"
 }

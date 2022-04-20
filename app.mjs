@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+import fs from 'fs-extra';
+
 
 import {promisify} from 'node:util';
 const pipeline = promisify(stream.pipeline);
@@ -39,6 +41,12 @@ const response = await enquire.prompt([
 
 console.log(response);
 
+const dirExists = await fs.pathExists(response.to_folder);
+if(!dirExists) {
+  console.log('directory does not exist, try again');
+  process.exit();
+}
+
 let files_list = await get_file_list(response.from_date);
 
 if(files_list){
@@ -62,7 +70,7 @@ if(files_list){
 
 
   for(let file of list) {
-    console.log(file);
+    console.log('Starting on the following file:',file);
     let fileSizeHuman = file.file_size / 1024 / 1024;
 
     //do the download request to get file URLs
@@ -75,6 +83,7 @@ if(files_list){
     }
 
     let url = `${url_base}/media/${file.id}/download`;
+    console.log('URL for file',url);
 
 
 
@@ -91,7 +100,7 @@ if(files_list){
     }
 
     let dl_url_parsed = nodeurl.parse(dl_url);
-    //console.log(dl_url_parsed);
+    console.log('parsed URL',dl_url_parsed);
 
     //add folder
     filename = response.to_folder + '/' + filename;
