@@ -47,7 +47,10 @@ if(!dirExists) {
   process.exit();
 }
 
+//get the initial files list
 let files_list = await get_file_list(response.from_date);
+let not_ready_files = [];
+let done_files = [];
 
 if(files_list){
 
@@ -55,74 +58,93 @@ if(files_list){
   let total_pages = files_list._pages.total_pages;
 
   if(current_page != total_pages){
-    console.log('MORE THAN 1 PAGE NOT IMPLEMENTED');
-    throw(new Error('not implemented'));
+    console.log('MORE THAN 1 PAGE - might take long');
+    //throw(new Error('not implemented'));
   }
 
-  let list = files_list._embedded.media;
+  while(current_page <= total_pages){
 
-
-
-  console.log('========================================');
-  //console.log(list);
-
-
-
-
-  for(let file of list) {
-    console.log('Starting on the following file:',file);
-    let fileSizeHuman = file.file_size / 1024 / 1024;
-
-    //do the download request to get file URLs
-    let fetch_opts = {
-      'headers': {
-        'Accept': 'application/vnd.gopro.jk.media+json; version=2.0.0',
-        'Authorization': `Bearer ${config.token}`
-      },
-      parseJson: text => JSON.parse(text)
+    //to support more pages
+    if(current_page != 1){
+      files_list = await get_file_list(response.from_date,current_page);
     }
 
-    let url = `${url_base}/media/${file.id}/download`;
-    console.log('URL for file',url);
+    let list = files_list._embedded.media;
+    console.log('========================================');
+    console.log('===== PAGE ', current_page, '=======');
+    //console.log(list);
 
+    for(let file of list) {
+      if(file.ready_to_view != 'ready'){
+        console.log('FILE NOT READY yet file:',file);
+        not_ready_files.push(file);
+        continue;
+      }
 
+      console.log('Starting on the following file:',file);
+      let fileSizeHuman = file.file_size / 1024 / 1024;
 
+      //do the download request to get file URLs
+      let fetch_opts = {
+        'headers': {
+          'Accept': 'application/vnd.gopro.jk.media+json; version=2.0.0',
+          'Authorization': `Bearer ${config.token}`
+        },
+        parseJson: text => JSON.parse(text)
+      }
 
-    let data = await got(url, fetch_opts).json();
-    //console.log(data);
+      let url = `${url_base}/media/${file.id}/download`;
+      console.log('URL for file',url);
 
-    let dl_url = data._embedded.files[0].url;
-    let filename = data.filename;
+      let data = await got(url, fetch_opts).json();
+      //console.log(data);
 
-    //convert .360 to mp4 as the default URL is mp4
-    if(filename.match(/\.360$/gi)){
-      filename = filename.replace(/\.360$/gi,'.mp4');
+      let dl_url = data._embedded.files[0].url;
+      let filename = data.filename;
+
+      //convert .360 to mp4 as the default URL is mp4
+      if(filename.match(/\.360$/gi)){
+        filename = filename.replace(/\.360$/gi,'.mp4');
+      }
+
+      let dl_url_parsed = nodeurl.parse(dl_url);
+      //console.log('parsed URL',dl_url_parsed);
+
+      //add folder
+      filename = response.to_folder + '/' + filename;
+
+      if(config.enable_download){
+        console.log('-----------');
+        console.log('START ',filename,fileSizeHuman,"MB (raw size)");
+        await pipeline(
+          got.stream(dl_url),
+          fs.createWriteStream(filename)
+        );
+        console.log('DONE ',filename);
+      }
+      else{
+        console.log('ACTUAL downloading disabled',filename);
+      }
+
+      done_files.push(file);
     }
 
-    let dl_url_parsed = nodeurl.parse(dl_url);
-    console.log('parsed URL',dl_url_parsed);
-
-    //add folder
-    filename = response.to_folder + '/' + filename;
-
-    if(config.enable_download){
-      console.log('-----------');
-      console.log('START ',filename,fileSizeHuman,"MB (raw size)");
-      await pipeline(
-        got.stream(dl_url),
-        fs.createWriteStream(filename)
-      );
-      console.log('DONE ',filename);
-    }
-    else{
-      console.log('ACTUAL downloading disabled');
-    }
+    //after doing the list (page)
+    current_page++;
+  }
 
 
-
-
-
-
+  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+  console.log('DONE!');
+  console.log('Total Files Downloaded : ',done_files.length);
+  console.log('Total NOT READY Files : ',not_ready_files.length);
+  if(not_ready_files.length > 0){
+    console.log('---- LISTING NOT READY FILES ----');
+    not_ready_files.forEach(f => {
+      console.log(`Filename : ${f.filename} Capured At : ${f.captured_at}`);
+    });
   }
 }
 else{
@@ -134,7 +156,7 @@ else{
 
 
 
-async function get_file_list(from_date){
+async function get_file_list(from_date,req_page = 1){
 
 
   let captured_range = `${from_date}T00:00:00+02:00,2050-12-01T23:59:59+02:00`;
@@ -149,7 +171,7 @@ async function get_file_list(from_date){
       fields : 'camera_model,captured_at,content_title,content_type,created_at,gopro_user_id,gopro_media,filename,file_size,height,fov,id,item_count,moments_count,on_public_profile,orientation,play_as,ready_to_edit,ready_to_view,resolution,source_duration,token,type,width',
       order_by : 'captured_at',
       per_page : 100,
-      page : 1,
+      page : req_page,
       captured_range : captured_range,
       processing_states : 'pretranscoding,transcoding,failure,ready'
 
