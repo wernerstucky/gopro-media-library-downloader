@@ -6,7 +6,7 @@
   },
   "name": "gopro-media-library-downloader",
   "description": "*  Downloads GoPro Media files from the API by giving the app a Bearer Token  *  You need to be relatively skilled to use this node app  *  Get the bearer token by logging into the web browser version https://plus.gopro.com/media-library/  *  Use to download GoPro media files faster for achival purposes",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "app.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
