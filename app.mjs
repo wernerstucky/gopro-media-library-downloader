@@ -94,24 +94,24 @@ if (files_list) {
       let url = `${url_base}/media/${file.id}/download`;
       console.log("URL for file", url);
 
-      let data = await got(url, fetch_opts).json();
-      //console.log(data);
-
-      let dl_url = data._embedded.files[0].url;
-      let filename = data.filename;
-
-      //convert .360 to mp4 as the default URL is mp4
-      if (filename.match(/\.360$/gi)) {
-        filename = filename.replace(/\.360$/gi, ".mp4");
-      }
-
-      let dl_url_parsed = nodeurl.parse(dl_url);
-      //console.log('parsed URL',dl_url_parsed);
-
-      //add folder
-      filename = response.to_folder + "/" + filename;
-
       try {
+        let data = await got(url, fetch_opts).json();
+        //console.log(data);
+
+        let dl_url = data._embedded.files[0].url;
+        let filename = data.filename;
+
+        //convert .360 to mp4 as the default URL is mp4
+        if (filename.match(/\.360$/gi)) {
+          filename = filename.replace(/\.360$/gi, ".mp4");
+        }
+
+        let dl_url_parsed = nodeurl.parse(dl_url);
+        //console.log('parsed URL',dl_url_parsed);
+
+        //add folder
+        filename = response.to_folder + "/" + filename;
+
         if (config.enable_download) {
           console.log("-----------");
           console.log("START ", filename, fileSizeHuman, "MB (raw size)");
