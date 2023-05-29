@@ -30,6 +30,13 @@ const response = await enquire.prompt([
     message: "Date from which to download (YYYY-MM-DD)",
     initial: config.default_from_date,
   },
+  ,
+  {
+    type: "input",
+    name: "to_date",
+    message: "Date to which to download (YYYY-MM-DD) (optional)",
+    initial: "",
+  },
   {
     type: "input",
     name: "to_folder",
@@ -47,7 +54,7 @@ if (!dirExists) {
 }
 
 //get the initial files list
-let files_list = await get_file_list(response.from_date);
+let files_list = await get_file_list(response.from_date, response.to_date);
 let not_ready_files = [];
 let done_files = [];
 let error_files = [];
@@ -64,7 +71,11 @@ if (files_list) {
   while (current_page <= total_pages) {
     //to support more pages
     if (current_page != 1) {
-      files_list = await get_file_list(response.from_date, current_page);
+      files_list = await get_file_list(
+        response.from_date,
+        response.to_date,
+        current_page
+      );
     }
 
     let list = files_list._embedded.media;
@@ -155,8 +166,11 @@ if (files_list) {
   console.log("ERROR");
 }
 
-async function get_file_list(from_date, req_page = 1) {
-  let captured_range = `${from_date}T00:00:00+02:00,2050-12-01T23:59:59+02:00`;
+async function get_file_list(from_date, to_date, req_page = 1) {
+  if (to_date == "" || !to_date) {
+    to_date = "2050-12-01";
+  }
+  let captured_range = `${from_date}T00:00:00+02:00,${to_date}T23:59:59+02:00`;
 
   let fetch_opts = {
     headers: {
